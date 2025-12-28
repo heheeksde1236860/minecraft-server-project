@@ -1,0 +1,4 @@
+#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
+#Sun Dec 28 16:59:20 CET 2025
+#u have to keep this file otherwise the server wont start.
+eula=true
