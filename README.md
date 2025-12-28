@@ -1,4 +1,4 @@
-this is a simple minecraft server hosting gui expririment i made. its defiently not perfect i might add a proxy and a custom domain thing later, currently i have only added paper 1.21.5 and .10 u can add more yourself.
+this is a simple minecraft server hosting gui experiment i made. its defiently not perfect i might add a proxy and a custom domain thing later, currently i have only added paper 1.21.5 and .10 u can add more yourself.
 please dont skid without credit.
 here are some screenshots: 
 
