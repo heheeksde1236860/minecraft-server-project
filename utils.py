@@ -3,7 +3,7 @@ from PySide6 import QtCore
 
 
 class UUIDFetcher(QtCore.QObject):
-    finished = QtCore.Signal(str, str, str)  # username, uuid, error
+    finished = QtCore.Signal(str, str, str)
 
     def __init__(self, username, proxy=None):
         super().__init__()
@@ -31,4 +31,5 @@ class UUIDFetcher(QtCore.QObject):
                 
         except Exception as e:
             self.finished.emit(self.username, "", str(e))
+
 
