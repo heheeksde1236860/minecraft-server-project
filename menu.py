@@ -5,13 +5,11 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from launch import LaunchTab, ServerManager
 from ban import BanTab
 from plugin_handler import PluginsTab
+from settings import SettingsTab
 
 IS_FROZEN = getattr(sys, "frozen", False)
 BASE_DIR = sys._MEIPASS if IS_FROZEN else os.path.dirname(os.path.abspath(__file__))
 
-# ======================================================
-# the actual design
-# ======================================================
 QSS = """
 * {
     font-family: Inter, Segoe UI, Arial;
@@ -94,6 +92,17 @@ QPushButton#Primary {
     border: 1px solid rgba(255,255,255,55);
     color: #0B0B12;
     font-weight: 700;
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+QPushButton#Secondary {
+    background: rgba(255,255,255,20);
+    border: 1px solid rgba(255,255,255,30);
+    color: #E9E7FF;
+}
+QPushButton#Secondary:hover {
+    background: rgba(255,255,255,35);
+    border-color: rgba(255,255,255,50);
 }
 QLineEdit {
     background: rgba(0,0,0,35);
@@ -113,13 +122,24 @@ QScrollArea > QWidget > QWidget {
     background: transparent;
 }
 QScrollBar:vertical {
-    width: 10px;
     background: transparent;
+    width: 8px;
+    margin: 0px;
 }
 QScrollBar::handle:vertical {
-    background: rgba(255,255,255,25);
-    border-radius: 5px;
+    background: rgba(255, 255, 255, 40);
+    border-radius: 4px;
     min-height: 30px;
+}
+QScrollBar::handle:vertical:hover {
+    background: rgba(255, 255, 255, 60);
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+    background: transparent;
+}
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: transparent;
 }
 QStackedWidget {
     background: transparent;
@@ -135,9 +155,6 @@ class Glow(QtWidgets.QGraphicsDropShadowEffect):
         self.setBlurRadius(blur)
         self.setOffset(0, y)
 
-# ======================================================
-# selector window 
-# ======================================================
 class VersionSelectorDialog(QtWidgets.QDialog):
     def __init__(self):
         super().__init__()
@@ -180,16 +197,12 @@ class VersionSelectorDialog(QtWidgets.QDialog):
         self.selected_version = version
         self.accept()
 
-# ======================================================
-# main window
-# ======================================================
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Minecraft Server Panel")
         self.resize(1100, 680)
 
-        # Server Manager Instance
         self.server_manager = ServerManager()
 
         root = QtWidgets.QWidget()
@@ -225,7 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sb_layout.addSpacing(20)
         
         self.nav_buttons = {}
-        for name in ["Launch", "Ban", "Plugins"]:
+        for name in ["Launch", "Settings", "Ban", "Plugins"]:
             btn = QtWidgets.QPushButton(name)
             btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             sb_layout.addWidget(btn)
@@ -244,16 +257,19 @@ class MainWindow(QtWidgets.QMainWindow):
         content_layout.addWidget(self.stack)
 
         self.tab_launch = LaunchTab(self.server_manager)
+        self.tab_settings = SettingsTab()
         self.tab_ban = BanTab(self.server_manager)
         self.tab_plugins = PluginsTab()
 
         self.stack.addWidget(self.tab_launch)
+        self.stack.addWidget(self.tab_settings)
         self.stack.addWidget(self.tab_ban)
         self.stack.addWidget(self.tab_plugins)
 
         self.nav_buttons["Launch"].clicked.connect(lambda: self.switch_tab(0))
-        self.nav_buttons["Ban"].clicked.connect(lambda: self.switch_tab(1))
-        self.nav_buttons["Plugins"].clicked.connect(lambda: self.switch_tab(2))
+        self.nav_buttons["Settings"].clicked.connect(lambda: self.switch_tab(1))
+        self.nav_buttons["Ban"].clicked.connect(lambda: self.switch_tab(2))
+        self.nav_buttons["Plugins"].clicked.connect(lambda: self.switch_tab(3))
         
         self.switch_tab(0)
 
@@ -274,11 +290,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
         event.accept()
 
-# ======================================================
-# entry point
-# ======================================================
 def check_installation():
-    # Check if ./world/ exists (as a proxy for installed server)
     if os.path.exists("world") and os.path.isdir("world"):
         return True
     
@@ -308,7 +320,6 @@ def main():
     app.setStyleSheet(QSS)
     
     if not check_installation():
-        # Show selection dialog
         dlg = VersionSelectorDialog()
         if dlg.exec() == QtWidgets.QDialog.Accepted and dlg.selected_version:
             if not install_server(dlg.selected_version):
