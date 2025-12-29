@@ -149,13 +149,11 @@ class LaunchTab(QtWidgets.QWidget):
         self.start_btn = QtWidgets.QPushButton("Start Server")
         self.start_btn.setObjectName("Primary")
         self.start_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.start_btn.setFixedHeight(40) 
         
         self.stop_btn = QtWidgets.QPushButton("Stop Server")
         self.stop_btn.setObjectName("Primary")
         self.stop_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.stop_btn.setEnabled(False)
-        self.stop_btn.setFixedHeight(40)
 
         controls.addWidget(self.start_btn)
         controls.addWidget(self.stop_btn)
